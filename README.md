@@ -42,7 +42,10 @@ The bundle patch restates the complete permission preset table (DSH patches repl
 
 ## Configure
 
-All knobs live in the plugin row config. Set them in your profile's `cordis.patch.yml`:
+Two layers, both live (no restart needed):
+
+1. **Web settings card** (easiest): Settings → Plugins → **Trusted Auto** card. Edit trusted areas (one absolute path per line), the harmless/dangerous pattern tables, and the switches there. Changes are written to the `auto-approval` section of `settings.yaml` and apply immediately. The card also shows the last few auto-approval decisions.
+2. **Composition config** (the default base): set in your profile's `cordis.patch.yml`:
 
 ```yaml
 # ~/.dsh/profiles/<profile>/cordis.patch.yml
@@ -62,7 +65,12 @@ All knobs live in the plugin row config. Set them in your profile's `cordis.patc
     dangerousPatterns: [ ... ]  # a match defers to the human, never denies
     maxCommandChars: 4000
     logDecisions: true
+    # Non-loopback hosts allowed to reach the configuration HTTP API
+    # (loopback is always allowed; cross-site requests are rejected).
+    trustedHosts: []
 ```
+
+Settings values overlay the composition defaults; the web card marks fields you have overridden and offers a one-click reset back to the defaults.
 
 ## What is auto-approved (rule table)
 
@@ -91,10 +99,20 @@ Everything else — including `git pull`/`push`/`fetch`/`checkout`, `git diff`/`
 
 ## Security
 
-- **No secrets.** The plugin contains no API keys, no network access, and no `eval`/dynamic code. It never reads configuration outside its own config.
-- **Auditable.** Every auto-approval is a one-shot grant recorded in the session log (`approval/asked` + `approval/decided`) plus a logger line naming the matched rule.
+- **No secrets.** The plugin contains no API keys, no network access beyond its own same-origin config API, and no `eval`/dynamic code. It never reads configuration outside its own config and settings section.
+- **Auditable.** Every auto-approval is a one-shot grant recorded in the session log (`approval/asked` + `approval/decided`) plus a logger line naming the matched rule; the settings card shows the most recent decisions.
 - **Fail-safe direction.** Errors in the decision path log a warning and delegate; the plugin cannot deny, block, or lock out a session.
+- **Gated config API.** `GET/PUT /api/dsh-auto-approval/config` accepts only loopback (or configured `trustedHosts`) same-origin requests; cross-site fetches are rejected. It reads and writes only the plugin's own settings namespace.
 - See [SECURITY.md](SECURITY.md) for the threat model and reporting.
+
+## Uninstall (no residue)
+
+1. Remove the plugin: `dsh plugin --profile <profile> remove dsh-auto-approval`
+2. Remove the trusted-area override from your profile's `cordis.patch.yml` (the `- id: auto-approval` entry, if you added one).
+3. Remove the `auto-approval:` section from `settings.yaml` (written by the web card, if you saved there).
+4. Verify no residue: `dsh --profile <profile> --dump-config` should contain no `auto-approval` row; `grep -n "auto-approval" ~/.dsh/settings.yaml` should find nothing.
+
+Nothing else is touched: no other files, no sessions, no credentials.
 
 ## Development
 

@@ -19,6 +19,8 @@ export interface AutoApprovalConfig {
   maxCommandChars?: number;
   /** Log each auto-approval decision. Default: true. */
   logDecisions?: boolean;
+  /** Non-loopback authorities allowed to reach the configuration HTTP API. Default: []. */
+  trustedHosts?: string[];
 }
 
 export type Decision = "allow" | "defer";
@@ -56,3 +58,21 @@ export function findToolCall(
   toolName?: string
 ): unknown;
 export function parseArguments(raw: unknown): Record<string, unknown> | null;
+export function resolveRealPath(path: string): string;
+
+/** The settings namespace key for this plugin's user-editable section. */
+export const NS: string;
+export const schema: unknown;
+export function defaultsOf(config: AutoApprovalConfig): Record<string, unknown>;
+export function assertValidEffectiveConfig(value: Record<string, unknown>): Record<string, unknown>;
+
+export const CONFIG_PATH: string;
+export const STATUS_PATH: string;
+export function isTrustedRequest(req: unknown, trustedHosts?: string[]): boolean;
+export function createHandlers(options: {
+  trustedHosts?: string[];
+  readConfig: () => unknown;
+  writeConfig: (body: Record<string, unknown>) => Promise<unknown>;
+  readStatus: () => unknown;
+  onError?: (error: unknown) => void;
+}): { api: unknown };

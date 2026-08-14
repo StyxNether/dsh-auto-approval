@@ -42,7 +42,10 @@ dsh plugin add github:StyxNether/dsh-auto-approval#<commit>
 
 ## 配置
 
-所有旋钮都在插件行的 config 里。在你的 profile 的 `cordis.patch.yml` 中设置：
+两层配置，都**即时生效（无需重启）**：
+
+1. **Web 设置卡片**（最简单）：设置 → 插件 → **Trusted Auto** 卡片。在那里编辑信任区域（每行一个绝对路径）、无害/危险命令模式表、各开关；保存写入 `settings.yaml` 的 `auto-approval` 段并立即生效。卡片还会显示最近几次自动放行记录。
+2. **组合配置**（默认基准层）：在 profile 的 `cordis.patch.yml` 中设置：
 
 ```yaml
 # ~/.dsh/profiles/<profile>/cordis.patch.yml
@@ -60,7 +63,11 @@ dsh plugin add github:StyxNether/dsh-auto-approval#<commit>
     dangerousPatterns: [ ... ]  # 命中即转人工（绝不直接拒绝）
     maxCommandChars: 4000
     logDecisions: true
+    # 允许访问配置 HTTP 接口的非回环主机（回环地址始终允许；跨站请求一律拒绝）。
+    trustedHosts: []
 ```
+
+设置值覆盖组合默认值；设置卡片会标记你已覆盖的字段，并提供一键恢复默认。
 
 ## 自动放行规则表
 
@@ -89,10 +96,20 @@ dsh plugin add github:StyxNether/dsh-auto-approval#<commit>
 
 ## 安全
 
-- **无密钥。** 插件不含任何 API 密钥、无网络访问、无 `eval`/动态代码，也不读取自身配置之外的任何配置。
-- **可审计。** 每次自动放行都是一次性授权，写入会话日志（`approval/asked` + `approval/decided`），并有记录命中规则的日志行。
+- **无密钥。** 插件不含任何 API 密钥；网络访问仅限自身的同源配置接口；无 `eval`/动态代码；只读取自身配置与 settings 段。
+- **可审计。** 每次自动放行都是一次性授权，写入会话日志（`approval/asked` + `approval/decided`），并有记录命中规则的日志行；设置卡片展示最近决策。
 - **失败方向安全。** 决策路径出错时记录警告并转人工；插件不可能拒绝、阻断或锁死会话。
+- **受控配置接口。** `GET/PUT /api/dsh-auto-approval/config` 只接受回环（或已配置 `trustedHosts`）的同源请求；跨站请求一律拒绝；只读写插件自己的 settings 命名空间。
 - 威胁模型与报告方式见 [SECURITY.md](SECURITY.md)。
+
+## 卸载（无残留）
+
+1. 移除插件：`dsh plugin --profile <profile> remove dsh-auto-approval`
+2. 删除 profile 的 `cordis.patch.yml` 中 `- id: auto-approval` 覆盖段（如曾添加）。
+3. 删除 `settings.yaml` 中的 `auto-approval:` 段（设置卡片保存过才会有）。
+4. 验证无残留：`dsh --profile <profile> --dump-config` 不应再有 `auto-approval` 行；`settings.yaml` 中不应再有 `auto-approval` 段。
+
+除此之外不触碰任何其他文件、会话或凭据。
 
 ## 开发
 

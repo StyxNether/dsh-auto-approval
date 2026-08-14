@@ -26,6 +26,7 @@ This plugin automates the human approval step for a deliberately narrow class of
 - The decision core reads only the session log (`tool/call` arguments) and its own configuration. It contains no secrets, no network access, no `eval`, and no dynamic code.
 - The plugin never denies a request: every non-qualifying request is delegated to the deployment's human answerer, and any error in the decision path also delegates. It cannot lock a session out.
 - `dangerousPatterns` is scope control for the auto-approval window, not an access-control mechanism — a matched pattern defers to the human, it does not stop the operation.
+- The configuration HTTP surface (`/api/dsh-auto-approval/config`, `/api/dsh-auto-approval/status`) is gated by the same trusted-origin rule the DSH upload manager uses: loopback hosts or configured `trustedHosts` only, cross-site fetches rejected, and an `Origin` header must match the `Host`. It exposes no secrets and reads/writes only the plugin's own `auto-approval` settings namespace. Settings writes are validated (absolute trusted areas, compilable regexes) before persistence.
 
 ### Known limitations (accepted by design)
 
