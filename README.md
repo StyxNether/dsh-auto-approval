@@ -2,7 +2,7 @@
 
 > 🌐 **Language**: English | [简体中文](README.zh.md)
 
-A middle permission tier for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness), between **Workspace Write** and **Full access** (danger-full-access): it adds a `trusted-auto` preset to the permission settings and backs it with an automated approval answerer that approves **harmless commands** and operations whose target lies inside **configured trusted areas** — including areas outside the current workspace — and asks the user for everything else.
+A middle permission tier for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness), between **Workspace Write** and **Full access** (danger-full-access): it adds a `auto-approval` preset to the permission settings and backs it with an automated approval answerer that approves **harmless commands** and operations whose target lies inside **configured trusted areas** — including areas outside the current workspace — and asks the user for everything else.
 
 > ⚠️ **Scope control, not a security boundary.** This plugin automates the *human* approval step for a narrow, verifiable class of requests. The DSH sandbox still confines every non-escalated call; an auto-approved call runs with the wider mode for exactly that one call (the same one-shot grant a human click would produce). Do not use it on machines or sessions you would not trust a human operator to run commands on.
 
@@ -19,8 +19,8 @@ A middle permission tier for [DeepSeek Harness](https://github.com/deepseek-ai/d
 
 After installing, the new preset appears in both permission surfaces:
 
-- **General settings → Permission** — sets `trusted-auto` as the default for future sessions;
-- **`/permission` picker** — switches the current session immediately (`/permission trusted-auto`).
+- **General settings → Permission** — sets `auto-approval` as the default for future sessions;
+- **`/permission` picker** — switches the current session immediately (`/permission auto-approval`).
 
 ## How it works
 
@@ -58,7 +58,7 @@ Two layers, both live (no restart needed):
     trustedAreas:
       - 'D:\data'
       - 'E:\repos'
-    # Only sessions whose effective preset is `trusted-auto` auto-approve.
+    # Only sessions whose effective preset is `auto-approval` auto-approve.
     requireTrustedPreset: true
     # Regex sources matched (case-insensitive) against command text.
     harmlessPatterns: [ ... ]   # defaults: see lib/decide.js

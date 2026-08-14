@@ -2,7 +2,7 @@
 
 > 🌐 **语言**: [English](README.md) | 简体中文
 
-面向 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 的中间权限档位：位于 **Workspace Write** 与 **Full access**（danger-full-access）之间。插件为权限设置新增 `trusted-auto` 预设，并附带一个自动审批器：**自动放行无害命令**和**目标区域位于已配置信任区域**的操作（不局限于当前工作区），其余请求照常询问用户。
+面向 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 的中间权限档位：位于 **Workspace Write** 与 **Full access**（danger-full-access）之间。插件为权限设置新增 `auto-approval` 预设，并附带一个自动审批器：**自动放行无害命令**和**目标区域位于已配置信任区域**的操作（不局限于当前工作区），其余请求照常询问用户。
 
 > ⚠️ **这是自动化的范围控制，不是安全边界。** 本插件只是把"人工点允许"这一步，对一小类可验证的请求自动化。DSH 沙箱仍然约束所有未升级的调用；被自动放行的调用仅在这一次调用上使用更宽模式（与人工点击允许产生的一次性授权完全一致）。请勿在你不放心让人类操作员执行命令的机器或会话上使用。
 
@@ -19,8 +19,8 @@
 
 安装后，新预设会同时出现在两个权限入口：
 
-- **General 设置 → Permission**：将 `trusted-auto` 设为之后新会话的默认档位；
-- **`/permission` 选择器**：立即切换当前会话（`/permission trusted-auto`）。
+- **General 设置 → Permission**：将 `auto-approval` 设为之后新会话的默认档位；
+- **`/permission` 选择器**：立即切换当前会话（`/permission auto-approval`）。
 
 ## 工作原理
 
@@ -56,7 +56,7 @@ dsh plugin add github:StyxNether/dsh-auto-approval#<commit>
     trustedAreas:
       - 'D:\data'
       - 'E:\repos'
-    # 仅当会话当前预设为 `trusted-auto` 时才自动放行。
+    # 仅当会话当前预设为 `auto-approval` 时才自动放行。
     requireTrustedPreset: true
     # 对命令文本做大小写不敏感匹配的正则源。
     harmlessPatterns: [ ... ]   # 默认值见 lib/decide.js

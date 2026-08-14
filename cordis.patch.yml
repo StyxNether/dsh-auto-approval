@@ -1,6 +1,6 @@
 # dsh-auto-approval bundle patch.
 #
-# 1. Adds the middle "trusted-auto" permission tier between workspace-write
+# 1. Adds the middle "auto-approval" permission tier between workspace-write
 #    and danger-full-access. DSH patch semantics REPLACE the targeted row's
 #    whole config, so the complete preset table is restated here — keep it in
 #    sync with @deepseek-ai/dsh-base's table when upgrading DSH.
@@ -24,7 +24,7 @@
         approval: ask
         name: workspace-write
         description: Write inside the workspace and permitted temporary directories; wider retries require approval.
-      trusted-auto:
+      auto-approval:
         sandbox: workspace-write
         approval: ask
         name: Auto Approval
@@ -40,7 +40,7 @@
       name: dsh-auto-approval
       config:
         enabled: true
-        # Only sessions whose effective preset is `trusted-auto` auto-approve.
+        # Only sessions whose effective preset is `auto-approval` auto-approve.
         requireTrustedPreset: true
         # Absolute paths treated as trusted areas. Configure them here, or in
         # your profile's cordis.patch.yml with a targeted override, e.g.:

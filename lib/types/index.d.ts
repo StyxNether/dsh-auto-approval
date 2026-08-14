@@ -7,7 +7,7 @@
 export interface AutoApprovalConfig {
   /** Master switch for the automated answerer. Default: true. */
   enabled?: boolean;
-  /** Only auto-approve sessions whose effective preset is `trusted-auto`. Default: true. */
+  /** Only auto-approve sessions whose effective preset is `auto-approval`. Default: true. */
   requireTrustedPreset?: boolean;
   /** Absolute paths whose commands and file targets are auto-approved. Default: []. */
   trustedAreas?: string[];
@@ -41,7 +41,7 @@ export interface ClassifyInput {
   caseSensitive?: boolean;
 }
 
-export const PRESET_NAME: "trusted-auto";
+export const PRESET_NAME: "auto-approval";
 export const name: "dsh-auto-approval";
 export const inject: readonly [];
 export const Config: unknown;
