@@ -1,68 +1,70 @@
-{
-  "name": "dsh-auto-approval",
-  "description": "A middle permission tier for DeepSeek Harness between workspace-write and danger-full-access: auto-approves harmless commands and operations targeting configured trusted areas, beyond the current workspace.",
-  "version": "1.2.2",
-  "type": "module",
-  "main": "lib/index.js",
-  "types": "lib/types/index.d.ts",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/StyxNether/dsh-auto-approval.git"
-  },
-  "keywords": [
-    "deepseek",
-    "harness",
-    "dsh",
-    "dsh-plugin",
-    "approval",
-    "sandbox",
-    "permission",
-    "trusted",
-    "auto-approve"
-  ],
-  "scripts": {
-    "test": "node --test test/",
-    "check": "node --check lib/index.js && node --check lib/decide.js && node --check lib/settings.js && node --check lib/http.js && node --test test/"
-  },
-  "devDependencies": {
-    "@deepseek-ai/dsh-app-boot": "^0.1.0-rc.6",
-    "@deepseek-ai/dsh-permission-presets": "^0.1.0-rc.6",
-    "@deepseek-ai/schemastery": "^3.18.1"
-  },
-  "peerDependencies": {
-    "@deepseek-ai/cordis": "^4.0.1",
-    "@deepseek-ai/dsh-settings": "^0.1.0-rc.6",
-    "@deepseek-ai/schemastery": "^3.18.1"
-  },
-  "dsh": {
-    "bundle": {
-      "patch": "./cordis.patch.yml"
-    },
-    "client": {
-      "platform": "web",
-      "inject": []
-    }
-  },
-  "exports": {
-    ".": {
-      "types": "./lib/types/index.d.ts",
-      "default": "./lib/index.js"
-    },
-    "./client": "./client.js",
-    "./cordis.patch.yml": "./cordis.patch.yml",
-    "./package.json": "./package.json"
-  },
-  "files": [
-    "lib",
-    "client.js",
-    "cordis.patch.yml",
-    "README.md",
-    "README.zh.md",
-    "SECURITY.md",
-    "LICENSE"
-  ],
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
-  }
+﻿{
+    "name":  "dsh-auto-approval",
+    "description":  "A middle permission tier for DeepSeek Harness between workspace-write and danger-full-access: auto-approves harmless commands and operations targeting configured trusted areas, beyond the current workspace.",
+    "version":  "1.2.4",
+    "type":  "module",
+    "main":  "lib/index.js",
+    "types":  "lib/types/index.d.ts",
+    "license":  "MIT",
+    "repository":  {
+                       "type":  "git",
+                       "url":  "git+https://github.com/StyxNether/dsh-auto-approval.git"
+                   },
+    "keywords":  [
+                     "deepseek",
+                     "harness",
+                     "dsh",
+                     "dsh-plugin",
+                     "approval",
+                     "sandbox",
+                     "permission",
+                     "trusted",
+                     "auto-approve"
+                 ],
+    "scripts":  {
+                    "test":  "node --test test/",
+                    "check":  "node --check lib/index.js \u0026\u0026 node --check lib/decide.js \u0026\u0026 node --check lib/settings.js \u0026\u0026 node --check lib/http.js \u0026\u0026 node --test test/"
+                },
+    "devDependencies":  {
+                            "@deepseek-ai/dsh-app-boot":  "^0.1.0-rc.6",
+                            "@deepseek-ai/dsh-permission-presets":  "^0.1.0-rc.6",
+                            "@deepseek-ai/schemastery":  "^3.18.1"
+                        },
+    "peerDependencies":  {
+                             "@deepseek-ai/cordis":  "^4.0.1",
+                             "@deepseek-ai/dsh-settings":  "^0.1.0-rc.6",
+                             "@deepseek-ai/schemastery":  "^3.18.1"
+                         },
+    "dsh":  {
+                "bundle":  {
+                               "patch":  "./cordis.patch.yml"
+                           },
+                "client":  {
+                               "platform":  "web",
+                               "inject":  [
+
+                                          ]
+                           }
+            },
+    "exports":  {
+                    ".":  {
+                              "types":  "./lib/types/index.d.ts",
+                              "default":  "./lib/index.js"
+                          },
+                    "./client":  "./client.js",
+                    "./cordis.patch.yml":  "./cordis.patch.yml",
+                    "./package.json":  "./package.json"
+                },
+    "files":  [
+                  "lib",
+                  "client.js",
+                  "cordis.patch.yml",
+                  "README.md",
+                  "README.zh.md",
+                  "SECURITY.md",
+                  "LICENSE"
+              ],
+    "publishConfig":  {
+                          "registry":  "https://registry.npmjs.org/"
+                      }
 }
