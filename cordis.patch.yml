@@ -27,8 +27,8 @@
       trusted-auto:
         sandbox: workspace-write
         approval: ask
-        name: trusted-auto
-        description: Workspace writes, plus automatic approval of harmless commands and operations targeting configured trusted areas (outside the workspace too); everything else asks.
+        name: Auto Approval
+        description: Workspace writes, plus automatic approval of harmless commands and operations targeting configured trusted areas (outside the workspace too); everything else asks. Combines with any sandbox mode when the preset gate is off.
       danger-full-access:
         sandbox: danger-full-access
         approval: never

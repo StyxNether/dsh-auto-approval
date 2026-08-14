@@ -8,7 +8,7 @@ A middle permission tier for [DeepSeek Harness](https://github.com/deepseek-ai/d
 
 ## What it does
 
-| | Workspace Write | **Trusted Auto** (this plugin) | Full access |
+| | Workspace Write | **Auto Approval** (this plugin) | Full access |
 |---|---|---|---|
 | Sandbox mode | `workspace-write` | `workspace-write` | `danger-full-access` |
 | Approval policy | `ask` | `ask` | `never` |
@@ -44,7 +44,7 @@ The bundle patch restates the complete permission preset table (DSH patches repl
 
 Two layers, both live (no restart needed):
 
-1. **Web settings page** (easiest): Settings → **Trusted Auto** (a dedicated page in the settings sidebar, like the Vision Toolkit page). Edit trusted areas (one absolute path per line), the harmless/dangerous pattern tables, and the switches there. Changes are written to the `auto-approval` section of `settings.yaml` and apply immediately. The page also shows the last few auto-approval decisions.
+1. **Web settings page** (easiest): Settings → **Auto Approval** (a dedicated page in the settings sidebar, like the Vision Toolkit page). Edit trusted areas (one absolute path per line), the harmless/dangerous pattern tables, and the switches there. Changes are written to the `auto-approval` section of `settings.yaml` and apply immediately. The page also shows the last few auto-approval decisions.
 2. **Composition config** (the default base): set in your profile's `cordis.patch.yml`:
 
 ```yaml
