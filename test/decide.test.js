@@ -8,7 +8,8 @@ import {
   DEFAULT_HARMLESS_PATTERNS,
   findToolCall,
   isUnderRoot,
-  parseArguments
+  parseArguments,
+  resolveRealPath
 } from "../lib/decide.js";
 
 // Windows-style case-insensitive comparison is the primary target platform,
@@ -16,7 +17,7 @@ import {
 const WIN = { caseSensitive: false };
 const TRUSTED = ["D:\\data", "E:\\repos"].map((p) => p.toLowerCase());
 
-function classify(toolName, args, { trustedRoots = TRUSTED, patterns = DEFAULT_HARMLESS_PATTERNS, dangerous = DEFAULT_DANGEROUS_PATTERNS, baseDir = "C:\\work", max = 4000 } = {}) {
+function classify(toolName, args, { trustedRoots = TRUSTED, patterns = DEFAULT_HARMLESS_PATTERNS, dangerous = DEFAULT_DANGEROUS_PATTERNS, baseDir = "C:\\work", max = 4000, resolveReal } = {}) {
   return classifyRequest({
     toolName,
     args,
@@ -25,7 +26,8 @@ function classify(toolName, args, { trustedRoots = TRUSTED, patterns = DEFAULT_H
     harmlessPatterns: compilePatterns(patterns),
     dangerousPatterns: compilePatterns(dangerous),
     maxCommandChars: max,
-    ...WIN
+    ...WIN,
+    ...resolveReal === void 0 ? {} : { resolveReal }
   });
 }
 
@@ -207,4 +209,47 @@ test("parseArguments handles JSON text, objects and garbage", () => {
   assert.equal(parseArguments("not json"), null);
   assert.equal(parseArguments(42), null);
   assert.deepEqual(parseArguments(void 0), {});
+});
+
+// ── realpath identity containment (symlink/junction defense) ────────────
+
+test("junction inside a trusted area cannot smuggle a write outside it", () => {
+  // `D:\data\link` is a junction to `E:\outside`; the real resolver reports
+  // the real target, so the fs write must DEFER.
+  const resolveReal = (p) => p.toLowerCase().startsWith("d:\\data\\link") ? "E:\\outside" + p.slice("d:\\data\\link".length) : p;
+  const trusted = ["d:\\data"];
+  assert.equal(
+    classify("write", { file_path: "D:\\data\\link\\evil.txt" }, { trustedRoots: trusted, resolveReal }).decision,
+    "defer",
+    "write through a junction to outside must defer"
+  );
+  assert.equal(
+    classify("edit", { file_path: "D:\\data\\link\\evil.txt" }, { trustedRoots: trusted, resolveReal }).decision,
+    "defer",
+    "edit through a junction to outside must defer"
+  );
+});
+
+test("junction in a trusted workdir cannot smuggle a command outside it", () => {
+  const resolveReal = (p) => p.toLowerCase().startsWith("d:\\data\\link") ? "E:\\outside" + p.slice("d:\\data\\link".length) : p;
+  const trusted = ["d:\\data"];
+  assert.equal(
+    classify("pwsh", { command: "git status", workdir: "D:\\data\\link\\repo" }, { trustedRoots: trusted, resolveReal }).decision,
+    "defer",
+    "git in a junctioned workdir must defer"
+  );
+});
+
+test("plain trusted-area paths still auto-approve with the real resolver", () => {
+  const identity = (p) => p;
+  assert.equal(classify("write", { file_path: "D:\\data\\out.txt" }, { trustedRoots: ["d:\\data"], resolveReal: identity }).decision, "allow");
+  assert.equal(classify("pwsh", { command: "git status", workdir: "D:\\data\\repo" }, { trustedRoots: ["d:\\data"], resolveReal: identity }).decision, "allow");
+});
+
+test("resolveRealPath resolves existing ancestors and keeps missing tails", () => {
+  // Windows host: the drive root exists; a non-existent leaf stays appended.
+  const resolved = resolveRealPath("C:\\Windows\\System32\\does-not-exist-xyz\\leaf.txt");
+  assert.equal(resolved, "C:\\Windows\\System32\\does-not-exist-xyz\\leaf.txt");
+  const existing = resolveRealPath("C:\\Windows");
+  assert.equal(existing.toLowerCase(), "c:\\windows");
 });

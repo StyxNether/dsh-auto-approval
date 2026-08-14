@@ -27,7 +27,7 @@ After installing, the new preset appears in both permission surfaces:
 DSH routes every operation that needs approval through the `approval/request` waterfall ([approval seam](https://github.com/deepseek-ai/deepseek-harness/blob/main/docs/subsystems/approval.md)). This plugin registers a listener with `prepend`, so it runs **before** the web approval prompt:
 
 1. For each request it looks up the recorded `tool/call` event by `callId` in the session log and reads the **real tool arguments** (command text, `file_path`, `workdir`) — it never trusts the model-written justification string.
-2. The pure decision core ([`lib/decide.js`](lib/decide.js)) classifies the request as `allow` or `defer`.
+2. The pure decision core ([`lib/decide.js`](lib/decide.js)) classifies the request as `allow` or `defer`. Path containment is evaluated on **real identity**: the deepest existing ancestor of every candidate path is resolved through `realpath` (the same mechanism the DSH filesystem sandbox uses), so symlinks and junctions cannot smuggle an auto-approval to a target outside a trusted area.
 3. `allow` returns `allowed-once` — the request never reaches the human UI; the audit pair `approval/asked` + `approval/decided: allowed-once` is still written to the session log, and the plugin logs the matched rule.
 4. `defer` calls `next()` — the deployment's human answerer decides as usual. **The plugin never denies anything.**
 
