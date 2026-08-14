@@ -36,9 +36,9 @@ DSH 把所有需要审批的操作路由到 `approval/request` 水瀑布（[审�
 ```bash
 # 从 npm registry 安装
 dsh plugin --profile <profile> add dsh-auto-approval-plugin
+# 或从 GitHub 安装（建议锁定提交以保持可复现）
+dsh plugin --profile <profile> add github:StyxNether/dsh-auto-approval-plugin#<commit>
 ```
-
-> 插件与 npm 包名统一为 `dsh-auto-approval-plugin`。GitHub 仓库仍为 `StyxNether/dsh-auto-approval-plugin`；如需锁定提交：`dsh plugin --profile <profile> add github:StyxNether/dsh-auto-approval-plugin#<commit>`。
 
 ## 配置
 

@@ -36,9 +36,9 @@ DSH routes every operation that needs approval through the `approval/request` wa
 ```bash
 # from the npm registry
 dsh plugin --profile <profile> add dsh-auto-approval-plugin
+# or from GitHub (pin a commit for reproducibility)
+dsh plugin --profile <profile> add github:StyxNether/dsh-auto-approval-plugin#<commit>
 ```
-
-> The package and plugin are both named `dsh-auto-approval-plugin`. The GitHub repository stays `StyxNether/dsh-auto-approval-plugin`; pin a commit for reproducibility: `dsh plugin --profile <profile> add github:StyxNether/dsh-auto-approval-plugin#<commit>`.
 
 The bundle patch restates the complete permission preset table (DSH patches replace a row's whole config), so keep it in sync with `@deepseek-ai/dsh-base`'s table when upgrading DSH — the patch warns and is skipped if the target row is missing.
 
