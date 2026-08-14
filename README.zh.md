@@ -44,7 +44,7 @@ dsh plugin add github:StyxNether/dsh-auto-approval#<commit>
 
 两层配置，都**即时生效（无需重启）**：
 
-1. **Web 设置卡片**（最简单）：设置 → 插件 → **Trusted Auto** 卡片。在那里编辑信任区域（每行一个绝对路径）、无害/危险命令模式表、各开关；保存写入 `settings.yaml` 的 `auto-approval` 段并立即生效。卡片还会显示最近几次自动放行记录。
+1. **Web 设置页**（最简单）：设置 → **Trusted Auto**（设置侧边栏独立页面，与 Vision Toolkit 的"视觉工具"页同级）。在那里编辑信任区域（每行一个绝对路径）、无害/危险命令模式表、各开关；保存写入 `settings.yaml` 的 `auto-approval` 段并立即生效。页面还会显示最近几次自动放行记录。
 2. **组合配置**（默认基准层）：在 profile 的 `cordis.patch.yml` 中设置：
 
 ```yaml

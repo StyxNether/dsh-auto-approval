@@ -265,6 +265,15 @@ window.__ModuleLoader__.load({
       )
     }
 
+    /**
+     * The Trusted Auto settings section — a dedicated page in the settings
+     * sidebar (like the Vision Toolkit's own page), replacing the former
+     * plugin-configuration card.
+     */
+    function AutoApprovalSection() {
+      return React.createElement(AutoApprovalCard)
+    }
+
     function apply(ctx) {
       ctx.effect(() => {
         if (document.querySelector(`style[data-plugin-css="${CSS_ID}"]`)) return
@@ -274,14 +283,14 @@ window.__ModuleLoader__.load({
         style.textContent = CSS
         document.head.appendChild(style)
         return () => style.remove()
-      }, 'dsh-auto-approval: card styles')
+      }, 'dsh-auto-approval: section styles')
 
-      ctx.slots.inject('settings.plugin.item', () => ctx.slots.register({
-        name: 'settings.plugin.item',
+      ctx.slots.inject('settings.section', () => ctx.slots.register({
+        name: 'settings.section',
         id: 'auto-approval',
-        order: 5,
+        order: 31,
         label: 'Trusted Auto',
-      }, () => React.createElement(AutoApprovalCard)))
+      }, AutoApprovalSection))
     }
 
     const inject = ['slots']

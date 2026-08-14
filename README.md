@@ -44,7 +44,7 @@ The bundle patch restates the complete permission preset table (DSH patches repl
 
 Two layers, both live (no restart needed):
 
-1. **Web settings card** (easiest): Settings → Plugins → **Trusted Auto** card. Edit trusted areas (one absolute path per line), the harmless/dangerous pattern tables, and the switches there. Changes are written to the `auto-approval` section of `settings.yaml` and apply immediately. The card also shows the last few auto-approval decisions.
+1. **Web settings page** (easiest): Settings → **Trusted Auto** (a dedicated page in the settings sidebar, like the Vision Toolkit page). Edit trusted areas (one absolute path per line), the harmless/dangerous pattern tables, and the switches there. Changes are written to the `auto-approval` section of `settings.yaml` and apply immediately. The page also shows the last few auto-approval decisions.
 2. **Composition config** (the default base): set in your profile's `cordis.patch.yml`:
 
 ```yaml
