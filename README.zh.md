@@ -1,5 +1,7 @@
 # dsh-auto-approval
 
+> 🌐 **语言**: [English](README.md) | 简体中文
+
 面向 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 的中间权限档位：位于 **Workspace Write** 与 **Full access**（danger-full-access）之间。插件为权限设置新增 `trusted-auto` 预设，并附带一个自动审批器：**自动放行无害命令**和**目标区域位于已配置信任区域**的操作（不局限于当前工作区），其余请求照常询问用户。
 
 > ⚠️ **这是自动化的范围控制，不是安全边界。** 本插件只是把"人工点允许"这一步，对一小类可验证的请求自动化。DSH 沙箱仍然约束所有未升级的调用；被自动放行的调用仅在这一次调用上使用更宽模式（与人工点击允许产生的一次性授权完全一致）。请勿在你不放心让人类操作员执行命令的机器或会话上使用。
