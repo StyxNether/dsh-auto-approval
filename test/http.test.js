@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { isTrustedRequest } from "../lib/http.js";
+import { isTrustedRequest, readJsonBody } from "../lib/http.js";
 
 function req(host, { origin, secFetchSite } = {}) {
   return {
@@ -39,4 +39,23 @@ test("non-loopback hosts require a configured trustedHosts entry", () => {
 
 test("a missing Host header is rejected", () => {
   assert.equal(isTrustedRequest({ url: "/x", headers: {} }), false);
+});
+
+test("readJsonBody parses a JSON object body", async () => {
+  const req = (chunks) => ({ [Symbol.asyncIterator]: async function* () { for (const chunk of chunks) yield chunk; } });
+  assert.deepEqual(await readJsonBody(req(["{\"a\":1}"])), { a: 1 });
+  assert.deepEqual(await readJsonBody(req([])), {});
+});
+
+test("readJsonBody rejects invalid JSON and non-object bodies", async () => {
+  const req = (chunks) => ({ [Symbol.asyncIterator]: async function* () { for (const chunk of chunks) yield chunk; } });
+  await assert.rejects(() => readJsonBody(req(["not json"])), /invalid JSON body/);
+  await assert.rejects(() => readJsonBody(req(["[1,2]"])), /expected a JSON object/);
+  await assert.rejects(() => readJsonBody(req(["\"str\""])), /expected a JSON object/);
+});
+
+test("readJsonBody rejects oversized bodies before buffering them fully", async () => {
+  const big = "x".repeat(1024);
+  const req = (chunks) => ({ [Symbol.asyncIterator]: async function* () { for (const chunk of chunks) yield chunk; } });
+  await assert.rejects(() => readJsonBody(req([big, big, big, big, "{\"a\":1}"]), 2048), /request body too large/);
 });
