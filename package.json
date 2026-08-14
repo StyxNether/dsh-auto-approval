@@ -1,5 +1,5 @@
 {
-    "name":  "dsh-auto-approval",
+    "name":  "dsh-auto-approval-plugin",
     "description":  "A middle permission tier for DeepSeek Harness between workspace-write and danger-full-access: auto-approves harmless commands and operations targeting configured trusted areas, beyond the current workspace.",
     "version":  "1.5.0",
     "type":  "module",

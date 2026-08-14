@@ -34,9 +34,11 @@ DSH routes every operation that needs approval through the `approval/request` wa
 ## Install
 
 ```bash
-# from the repo (recommended: pin a commit)
-dsh plugin add github:StyxNether/dsh-auto-approval#<commit>
+# from the npm registry
+dsh plugin --profile <profile> add dsh-auto-approval-plugin
 ```
+
+> The npm package name is `dsh-auto-approval-plugin` because the shorter name `dsh-auto-approval` is already taken on npm by an unrelated third-party package. The GitHub repository stays `StyxNether/dsh-auto-approval`; pin a commit for reproducibility: `dsh plugin --profile <profile> add github:StyxNether/dsh-auto-approval#<commit>`.
 
 The bundle patch restates the complete permission preset table (DSH patches replace a row's whole config), so keep it in sync with `@deepseek-ai/dsh-base`'s table when upgrading DSH — the patch warns and is skipped if the target row is missing.
 
@@ -107,7 +109,7 @@ Everything else — including `git pull`/`push`/`fetch`/`checkout`, `git diff`/`
 
 ## Uninstall (no residue)
 
-1. Remove the plugin: `dsh plugin --profile <profile> remove dsh-auto-approval`
+1. Remove the plugin: `dsh plugin --profile <profile> remove dsh-auto-approval-plugin`
 2. Remove the trusted-area override from your profile's `cordis.patch.yml` (the `- id: auto-approval` entry, if you added one).
 3. Remove the `auto-approval:` section from `settings.yaml` (written by the web card, if you saved there).
 4. Verify no residue: `dsh --profile <profile> --dump-config` should contain no `auto-approval` row; `grep -n "auto-approval" ~/.dsh/settings.yaml` should find nothing.

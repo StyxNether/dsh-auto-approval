@@ -34,11 +34,11 @@ DSH 把所有需要审批的操作路由到 `approval/request` 水瀑布（[审�
 ## 安装
 
 ```bash
-# 从仓库安装（建议锁定 commit）
-dsh plugin add github:StyxNether/dsh-auto-approval#<commit>
+# 从 npm registry 安装
+dsh plugin --profile <profile> add dsh-auto-approval-plugin
 ```
 
-注意：bundle 补丁会整体复述权限预设表（DSH 补丁按行整体替换 config），升级 DSH 时请与 `@deepseek-ai/dsh-base` 的预设表保持同步；若目标行缺失，补丁会告警并跳过。
+> npm 包名使用 `dsh-auto-approval-plugin`，因为更短的 `dsh-auto-approval` 在 npm 上已被无关第三方包占用。GitHub 仓库仍为 `StyxNether/dsh-auto-approval`；如需锁定提交：`dsh plugin --profile <profile> add github:StyxNether/dsh-auto-approval#<commit>`。
 
 ## 配置
 
@@ -104,7 +104,7 @@ dsh plugin add github:StyxNether/dsh-auto-approval#<commit>
 
 ## 卸载（无残留）
 
-1. 移除插件：`dsh plugin --profile <profile> remove dsh-auto-approval`
+1. 移除插件：`dsh plugin --profile <profile> remove dsh-auto-approval-plugin`
 2. 删除 profile 的 `cordis.patch.yml` 中 `- id: auto-approval` 覆盖段（如曾添加）。
 3. 删除 `settings.yaml` 中的 `auto-approval:` 段（设置卡片保存过才会有）。
 4. 验证无残留：`dsh --profile <profile> --dump-config` 不应再有 `auto-approval` 行；`settings.yaml` 中不应再有 `auto-approval` 段。
