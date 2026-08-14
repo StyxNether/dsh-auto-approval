@@ -15,8 +15,13 @@ const layers = [
   ...profile.layers.map((layer) => layer.patches),
   profile.patches
 ];
-const pluginPatch = loadOverlayPatches("dsh", join(fileURLToPath(new URL("..", import.meta.url)), "cordis.patch.yml"));
-const data = composeEntries([...layers, pluginPatch], (message) => console.error("warn:", message));
+// When the bundle is already installed in the profile, its patch is already a
+// layer; only append it as an overlay when verifying a not-yet-installed copy.
+const installed = profile.layers.some((layer) => layer.packageName === "dsh-auto-approval");
+const patches = installed
+  ? layers
+  : [...layers, loadOverlayPatches("dsh", join(fileURLToPath(new URL("..", import.meta.url)), "cordis.patch.yml"))];
+const data = composeEntries(patches, (message) => console.error("warn:", message));
 
 const byId = new Map();
 const index = (entries) => {
