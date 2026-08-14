@@ -8,7 +8,7 @@
 
 ## Reporting a vulnerability
 
-Please do **not** open a public issue for security problems. Report privately to the repository owner via GitHub's [private vulnerability reporting](https://github.com/StyxNether/dsh-auto-approval/security/advisories/new) (Security → Report a vulnerability), or open a draft security advisory.
+Please do **not** open a public issue for security problems. Report privately to the repository owner via GitHub's [private vulnerability reporting](https://github.com/StyxNether/dsh-auto-approval-plugin/security/advisories/new) (Security → Report a vulnerability), or open a draft security advisory.
 
 Please include:
 

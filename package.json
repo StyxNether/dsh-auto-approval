@@ -8,7 +8,7 @@
     "license":  "MIT",
     "repository":  {
                        "type":  "git",
-                       "url":  "git+https://github.com/StyxNether/dsh-auto-approval.git"
+                       "url":  "git+https://github.com/StyxNether/dsh-auto-approval-plugin.git"
                    },
     "keywords":  [
                      "deepseek",
