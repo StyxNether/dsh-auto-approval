@@ -1,5 +1,5 @@
 /**
- * Type declarations for dsh-auto-approval.
+ * Type declarations for dsh-auto-approval-plugin.
  * The runtime is plain JavaScript; these types describe the Cordis plugin
  * surface and the pure decision module for consumers and editors.
  */
@@ -42,7 +42,7 @@ export interface ClassifyInput {
 }
 
 export const PRESET_NAME: "auto-approval";
-export const name: "dsh-auto-approval";
+export const name: "dsh-auto-approval-plugin";
 export const inject: readonly [];
 export const Config: unknown;
 

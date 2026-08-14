@@ -1,5 +1,5 @@
 // Offline composition check: apply every bundle layer of a profile plus
-// dsh-auto-approval's patch, and validate the touched rows against the
+// dsh-auto-approval-plugin's patch, and validate the touched rows against the
 // runtime schemas. Read-only: never writes profile files.
 //
 // Usage: npm install && node scripts/verify-composition.js [profile]
@@ -17,7 +17,7 @@ const layers = [
 ];
 // When the bundle is already installed in the profile, its patch is already a
 // layer; only append it as an overlay when verifying a not-yet-installed copy.
-const installed = profile.layers.some((layer) => layer.packageName === "dsh-auto-approval");
+const installed = profile.layers.some((layer) => layer.packageName === "dsh-auto-approval-plugin");
 const patches = installed
   ? layers
   : [...layers, loadOverlayPatches("dsh", join(fileURLToPath(new URL("..", import.meta.url)), "cordis.patch.yml"))];

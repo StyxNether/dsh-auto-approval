@@ -1,4 +1,4 @@
-# dsh-auto-approval
+# dsh-auto-approval-plugin
 
 > 🌐 **Language**: English | [简体中文](README.zh.md)
 
@@ -38,7 +38,7 @@ DSH routes every operation that needs approval through the `approval/request` wa
 dsh plugin --profile <profile> add dsh-auto-approval-plugin
 ```
 
-> The npm package name is `dsh-auto-approval-plugin` because the shorter name `dsh-auto-approval` is already taken on npm by an unrelated third-party package. The GitHub repository stays `StyxNether/dsh-auto-approval`; pin a commit for reproducibility: `dsh plugin --profile <profile> add github:StyxNether/dsh-auto-approval#<commit>`.
+> The package and plugin are both named `dsh-auto-approval-plugin`. The GitHub repository stays `StyxNether/dsh-auto-approval`; pin a commit for reproducibility: `dsh plugin --profile <profile> add github:StyxNether/dsh-auto-approval#<commit>`.
 
 The bundle patch restates the complete permission preset table (DSH patches replace a row's whole config), so keep it in sync with `@deepseek-ai/dsh-base`'s table when upgrading DSH — the patch warns and is skipped if the target row is missing.
 
@@ -104,7 +104,7 @@ Everything else — including `git pull`/`push`/`fetch`/`checkout`, `git diff`/`
 - **No secrets.** The plugin contains no API keys, no network access beyond its own same-origin config API, and no `eval`/dynamic code. It never reads configuration outside its own config and settings section.
 - **Auditable.** Every auto-approval is a one-shot grant recorded in the session log (`approval/asked` + `approval/decided`) plus a logger line naming the matched rule; the settings card shows the most recent decisions.
 - **Fail-safe direction.** Errors in the decision path log a warning and delegate; the plugin cannot deny, block, or lock out a session.
-- **Gated config API.** `GET/PUT /api/dsh-auto-approval/config` accepts only loopback (or configured `trustedHosts`) same-origin requests; cross-site fetches are rejected. It reads and writes only the plugin's own settings namespace.
+- **Gated config API.** `GET/PUT /api/dsh-auto-approval-plugin/config` accepts only loopback (or configured `trustedHosts`) same-origin requests; cross-site fetches are rejected. It reads and writes only the plugin's own settings namespace.
 - See [SECURITY.md](SECURITY.md) for the threat model and reporting.
 
 ## Uninstall (no residue)

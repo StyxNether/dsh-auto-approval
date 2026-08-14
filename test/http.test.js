@@ -4,7 +4,7 @@ import { isTrustedRequest, readJsonBody } from "../lib/http.js";
 
 function req(host, { origin, secFetchSite } = {}) {
   return {
-    url: "/api/dsh-auto-approval/config",
+    url: "/api/dsh-auto-approval-plugin/config",
     headers: {
       host,
       ...origin === undefined ? {} : { origin },

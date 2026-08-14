@@ -1,4 +1,4 @@
-# dsh-auto-approval bundle patch.
+# dsh-auto-approval-plugin bundle patch.
 #
 # 1. Adds the middle "auto-approval" permission tier between workspace-write
 #    and danger-full-access. DSH patch semantics REPLACE the targeted row's
@@ -37,7 +37,7 @@
 
 - insert:
     - id: auto-approval
-      name: dsh-auto-approval
+      name: dsh-auto-approval-plugin
       config:
         enabled: true
         # Only sessions whose effective preset is `auto-approval` auto-approve.

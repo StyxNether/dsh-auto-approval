@@ -1,4 +1,4 @@
-# dsh-auto-approval
+# dsh-auto-approval-plugin
 
 > 🌐 **语言**: [English](README.md) | 简体中文
 
@@ -38,7 +38,7 @@ DSH 把所有需要审批的操作路由到 `approval/request` 水瀑布（[审�
 dsh plugin --profile <profile> add dsh-auto-approval-plugin
 ```
 
-> npm 包名使用 `dsh-auto-approval-plugin`，因为更短的 `dsh-auto-approval` 在 npm 上已被无关第三方包占用。GitHub 仓库仍为 `StyxNether/dsh-auto-approval`；如需锁定提交：`dsh plugin --profile <profile> add github:StyxNether/dsh-auto-approval#<commit>`。
+> 插件与 npm 包名统一为 `dsh-auto-approval-plugin`。GitHub 仓库仍为 `StyxNether/dsh-auto-approval`；如需锁定提交：`dsh plugin --profile <profile> add github:StyxNether/dsh-auto-approval#<commit>`。
 
 ## 配置
 
@@ -99,7 +99,7 @@ dsh plugin --profile <profile> add dsh-auto-approval-plugin
 - **无密钥。** 插件不含任何 API 密钥；网络访问仅限自身的同源配置接口；无 `eval`/动态代码；只读取自身配置与 settings 段。
 - **可审计。** 每次自动放行都是一次性授权，写入会话日志（`approval/asked` + `approval/decided`），并有记录命中规则的日志行；设置卡片展示最近决策。
 - **失败方向安全。** 决策路径出错时记录警告并转人工；插件不可能拒绝、阻断或锁死会话。
-- **受控配置接口。** `GET/PUT /api/dsh-auto-approval/config` 只接受回环（或已配置 `trustedHosts`）的同源请求；跨站请求一律拒绝；只读写插件自己的 settings 命名空间。
+- **受控配置接口。** `GET/PUT /api/dsh-auto-approval-plugin/config` 只接受回环（或已配置 `trustedHosts`）的同源请求；跨站请求一律拒绝；只读写插件自己的 settings 命名空间。
 - 威胁模型与报告方式见 [SECURITY.md](SECURITY.md)。
 
 ## 卸载（无残留）

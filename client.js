@@ -1,15 +1,15 @@
 window.__ModuleLoader__.load({
-  id: 'dsh-auto-approval',
+  id: 'dsh-auto-approval-plugin',
   factory: (require) => {
     const module = { exports: {} }
     const exports = module.exports
     Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' })
 
     const React = require('react')
-    const CONFIG_PATH = '/api/dsh-auto-approval/config'
-    const STATUS_PATH = '/api/dsh-auto-approval/status'
+    const CONFIG_PATH = '/api/dsh-auto-approval-plugin/config'
+    const STATUS_PATH = '/api/dsh-auto-approval-plugin/status'
     const NS = 'auto-approval'
-    const CSS_ID = 'dsh-auto-approval/section.css'
+    const CSS_ID = 'dsh-auto-approval-plugin/section.css'
     const CSS = `
 .aa-card{display:flex;flex-direction:column;gap:12px;max-width:720px}
 .aa-head{display:flex;align-items:center;gap:8px}
@@ -325,14 +325,14 @@ window.__ModuleLoader__.load({
       ctx.effect(() => {
         if (document.querySelector(`style[data-plugin-css="${CSS_ID}"]`)) return
         const style = document.createElement('style')
-        style.dataset.plugin = 'dsh-auto-approval'
+        style.dataset.plugin = 'dsh-auto-approval-plugin'
         style.dataset.pluginCss = CSS_ID
         style.textContent = CSS
         document.head.appendChild(style)
         return () => style.remove()
-      }, 'dsh-auto-approval: section styles')
+      }, 'dsh-auto-approval-plugin: section styles')
 
-      ctx.effect(() => ctx.locale.register(NS, { en, zh }), 'dsh-auto-approval: locale')
+      ctx.effect(() => ctx.locale.register(NS, { en, zh }), 'dsh-auto-approval-plugin: locale')
       const t = ctx.locale.bind(NS)
 
       ctx.slots.inject('settings.section', () => ctx.slots.register({
