@@ -1,17 +1,21 @@
-// Offline composition check: apply every bundle layer of the `web` profile
-// plus dsh-auto-approval's patch, and print the rows the plugin touches.
-// Read-only: never writes profile files.
+// Offline composition check: apply every bundle layer of a profile plus
+// dsh-auto-approval's patch, and validate the touched rows against the
+// runtime schemas. Read-only: never writes profile files.
+//
+// Usage: npm install && node scripts/verify-composition.js [profile]
 import { composeEntries, loadOverlayPatches, loadProfile } from "@deepseek-ai/dsh-app-boot";
 import { fileURLToPath } from "node:url";
+import { join } from "node:path";
 
 const ANCHOR = fileURLToPath(new URL("../package.json", import.meta.url));
+const profileName = process.argv[2] ?? "web";
 
-const profile = loadProfile("dsh", "web", ANCHOR, void 0, { userLayer: true });
+const profile = loadProfile("dsh", profileName, ANCHOR, void 0, { userLayer: true });
 const layers = [
   ...profile.layers.map((layer) => layer.patches),
   profile.patches
 ];
-const pluginPatch = loadOverlayPatches("dsh", "E:\\test\\dsh-auto-approval\\cordis.patch.yml");
+const pluginPatch = loadOverlayPatches("dsh", join(fileURLToPath(new URL("..", import.meta.url)), "cordis.patch.yml"));
 const data = composeEntries([...layers, pluginPatch], (message) => console.error("warn:", message));
 
 const byId = new Map();
