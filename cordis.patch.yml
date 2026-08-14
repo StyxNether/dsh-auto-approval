@@ -1,0 +1,50 @@
+# dsh-auto-approval bundle patch.
+#
+# 1. Adds the middle "trusted-auto" permission tier between workspace-write
+#    and danger-full-access. DSH patch semantics REPLACE the targeted row's
+#    whole config, so the complete preset table is restated here — keep it in
+#    sync with @deepseek-ai/dsh-base's table when upgrading DSH.
+# 2. Mounts the auto-approval engine that backs the tier.
+#
+# After installing, select "Trusted Auto" for the current session via the
+# /permission picker, or set it as the default for future sessions in
+# General settings -> Permission.
+
+- id: permission
+  name: '@deepseek-ai/dsh-permission-presets'
+  config:
+    presets:
+      read-only:
+        sandbox: read-only
+        approval: ask
+        name: read-only
+        description: Read files anywhere; no modifications allowed.
+      workspace-write:
+        sandbox: workspace-write
+        approval: ask
+        name: workspace-write
+        description: Write inside the workspace and permitted temporary directories; wider retries require approval.
+      trusted-auto:
+        sandbox: workspace-write
+        approval: ask
+        name: trusted-auto
+        description: Workspace writes, plus automatic approval of harmless commands and operations targeting configured trusted areas (outside the workspace too); everything else asks.
+      danger-full-access:
+        sandbox: danger-full-access
+        approval: never
+        name: danger-full-access
+        description: Full file access without approval prompts.
+
+- insert:
+    - id: auto-approval
+      name: dsh-auto-approval
+      config:
+        enabled: true
+        # Only sessions whose effective preset is `trusted-auto` auto-approve.
+        requireTrustedPreset: true
+        # Absolute paths treated as trusted areas. Configure them here, or in
+        # your profile's cordis.patch.yml with a targeted override, e.g.:
+        #   - id: auto-approval
+        #     config:
+        #       trustedAreas: ['D:\data', 'E:\repos']
+        trustedAreas: []
