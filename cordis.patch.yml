@@ -39,9 +39,10 @@
     - id: auto-approval
       name: dsh-auto-approval-plugin
       config:
-        enabled: true
-        # Only sessions whose effective preset is `auto-approval` auto-approve.
-        requireTrustedPreset: true
+        # Master switch: off (disabled) | global (any session tier) | gated
+        # (only sessions on the auto-approval tier). Installed default:
+        # enabled and gated.
+        mode: gated
         # Absolute paths treated as trusted areas. Configure them here, or in
         # your profile's cordis.patch.yml with a targeted override, e.g.:
         #   - id: auto-approval

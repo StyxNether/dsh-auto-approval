@@ -5,10 +5,8 @@
  */
 
 export interface AutoApprovalConfig {
-  /** Master switch for the automated answerer. Default: true. */
-  enabled?: boolean;
-  /** Only auto-approve sessions whose effective preset is `auto-approval`. Default: true. */
-  requireTrustedPreset?: boolean;
+  /** Master switch. Default: "gated". */
+  mode?: "off" | "global" | "gated";
   /** Absolute paths whose commands and file targets are auto-approved. Default: []. */
   trustedAreas?: string[];
   /** Regex sources matched (case-insensitive) against command text. Default: curated introspection set. */
@@ -62,7 +60,11 @@ export function resolveRealPath(path: string): string;
 
 /** The settings namespace key for this plugin's user-editable section. */
 export const NS: string;
+export const MODES: readonly ["off", "global", "gated"];
 export const schema: unknown;
+export function hasLegacyShape(value: unknown): boolean;
+export function modeFromLegacy(enabled: unknown, requireTrustedPreset: unknown): "off" | "global" | "gated";
+export function normalizeConfig(value: Record<string, unknown>): Record<string, unknown>;
 export function defaultsOf(config: AutoApprovalConfig): Record<string, unknown>;
 export function assertValidEffectiveConfig(value: Record<string, unknown>): Record<string, unknown>;
 

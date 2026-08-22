@@ -40,6 +40,20 @@ test("pwsh introspection commands are auto-approved anywhere", () => {
   }
 });
 
+test("read-only inspection commands added in 2.1.0 auto-approve anywhere", () => {
+  for (const command of [
+    "Get-Content C:\\x.txt", "Get-Item C:\\x", "Get-ItemProperty HKLM:\\x", "Test-Path C:\\x",
+    "Resolve-Path ~", "Select-String -Path D:\\a -Pattern x", "tasklist", "systeminfo",
+    "ipconfig /all", "netstat -ano", "Get-NetTCPConnection", "Get-NetIPAddress",
+    "cat -n x.txt", "head -5 x", "tail -1 x", "wc -l x", "stat x", "uname -a",
+    "df -h", "du -sh .", "which node", "type D:\\notes.txt"
+  ]) {
+    const result = classify("pwsh", { command });
+    assert.equal(result.decision, "allow", `${command} should be allowed`);
+  }
+  assert.equal(classify("bash", { command: "cat src/x.js" }).decision, "allow");
+});
+
 test("case-insensitive matching on Windows", () => {
   assert.equal(classify("pwsh", { command: "GET-PROCESS" }).decision, "allow");
 });
@@ -92,6 +106,17 @@ test("command referencing a trusted path with trusted workdir is allowed", () =>
 test("trusted workdir alone does not allow arbitrary commands", () => {
   assert.equal(classify("pwsh", { command: "Set-Content C:\\Windows\\evil.txt hello", workdir: "D:\\data" }).decision, "defer");
   assert.equal(classify("pwsh", { command: "Invoke-WebRequest http://evil.example", workdir: "D:\\data" }).decision, "defer");
+});
+
+test("shell metacharacters disqualify trusted-area commands too", () => {
+  // Rule 5 must not smuggle redirection/pipes into a trusted workdir even
+  // when the command text references a trusted path.
+  assert.equal(classify("pwsh", { command: "echo hi > D:\\data\\x.txt", workdir: "D:\\data" }).decision, "defer");
+  assert.equal(classify("pwsh", { command: "Get-Content C:\\secret | Out-File D:\\data\\leak.txt", workdir: "D:\\data" }).decision, "defer");
+  assert.equal(classify("pwsh", { command: "type D:\\data\\a.txt; whoami", workdir: "D:\\data" }).decision, "defer");
+  assert.equal(classify("pwsh", { command: "echo `whoami` D:\\data", workdir: "D:\\data" }).decision, "defer");
+  // the meta-free baseline still auto-approves
+  assert.equal(classify("pwsh", { command: "Copy-Item D:\\data\\a.txt D:\\data\\b.txt", workdir: "D:\\data" }).decision, "allow");
 });
 
 test("relative workdir resolves against the session cwd", () => {
@@ -149,6 +174,55 @@ test("system-destructive commands defer even in trusted areas", () => {
 
 test("cleanup inside a trusted area is not treated as dangerous", () => {
   assert.equal(classify("pwsh", { command: "rm -rf D:\\data\\build", workdir: "D:\\data" }).decision, "allow");
+});
+
+test("privilege/persistence/security-control commands added in 2.1.0 defer", () => {
+  for (const command of [
+    "net user hacker Pass123 /add",
+    "net localgroup administrators hacker /add",
+    "New-LocalUser hacker",
+    "Add-LocalGroupMember -Group Administrators -Member hacker",
+    "Set-MpPreference -DisableRealtimeMonitoring $true",
+    "Add-MpPreference -ExclusionPath C:\\x",
+    "Set-ExecutionPolicy Bypass",
+    "sudo rm -rf /tmp/x",
+    "gsudo whoami",
+    "Start-Process -Verb RunAs whoami",
+    "runas /user:admin cmd",
+    "psexec \\\\host cmd",
+    "wmic process call create cmd",
+    "New-SelfSignedCertificate -DnsName evil.example",
+    "Invoke-Expression 'x'",
+    "iex 'x'",
+    "powershell -EncodedCommand AAA",
+    "powershell -enc AAA",
+    "reg add HKLM\\Software\\X /v y /d z",
+    "reg delete HKLM\\Software\\X",
+    "regedit /s x.reg",
+    "netsh advfirewall set allprofiles state off",
+    "New-NetFirewallRule -DisplayName x",
+    "sc create evil binPath= x",
+    "sc stop Spooler",
+    "Stop-Service Spooler",
+    "Restart-Service Spooler",
+    "schtasks /create /tn evil /tr x",
+    "Register-ScheduledTask -TaskName evil",
+    "takeown /f C:\\x",
+    "icacls C:\\x /grant u:f",
+    "Set-Acl C:\\x -AclObject x",
+    "vssadmin delete shadows /all",
+    "bcdedit /set x y",
+    "cipher /w:C:",
+    "wevtutil cl System",
+    "Clear-EventLog -LogName System",
+    "Remove-EventLog -LogName System"
+  ]) {
+    const result = classify("pwsh", { command, workdir: "D:\\data" });
+    assert.equal(result.decision, "defer", `${command} must defer`);
+  }
+  // read-only service queries stay auto-approved, only control verbs defer
+  assert.equal(classify("pwsh", { command: "Get-Service Spooler" }).decision, "allow");
+  assert.equal(classify("pwsh", { command: "sc query Spooler" }).decision, "allow");
 });
 
 // ── boundaries ──────────────────────────────────────────────────────────

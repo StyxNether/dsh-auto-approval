@@ -1,7 +1,7 @@
 {
     "name":  "dsh-auto-approval-plugin",
     "description":  "A middle permission tier for DeepSeek Harness between workspace-write and danger-full-access: auto-approves harmless commands and operations targeting configured trusted areas, beyond the current workspace.",
-    "version":  "2.0.0",
+    "version":  "2.1.0",
     "type":  "module",
     "main":  "lib/index.js",
     "types":  "lib/types/index.d.ts",
@@ -59,8 +59,10 @@
                   "lib",
                   "client.js",
                   "cordis.patch.yml",
+                  "docs",
                   "README.md",
                   "README.zh.md",
+                  "README.i18n.yaml",
                   "SECURITY.md",
                   "LICENSE"
               ],

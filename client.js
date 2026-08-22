@@ -37,12 +37,15 @@ window.__ModuleLoader__.load({
     const en = {
       nav: 'Auto Approval',
       title: 'Auto Approval',
-      desc: 'Between Workspace Write and Full access: harmless commands and operations whose target lies inside a trusted area are approved automatically; everything else asks. Works together with any permission mode when the preset gate is off.',
+      desc: 'Between Workspace Write and Full access: harmless commands and operations whose target lies inside a trusted area are approved automatically; everything else asks. Choose whether it applies globally or only to sessions on the Auto Approval tier.',
       badgeActive: 'Active',
       badgeInactive: 'Disabled',
       badgeCustom: 'Customized',
-      enabled: 'Enable auto-approval',
-      gate: 'Only when the session mode is Auto Approval',
+      enable: 'Enable auto-approval',
+      modeLabel: 'Scope',
+      modeGlobal: 'Globally, regardless of the session tier',
+      modeGated: 'Only when the session tier is Auto Approval',
+      offHint: 'While disabled, picking the Auto Approval tier behaves exactly like Workspace Write (no automatic approvals).',
       trustedAreas: 'Trusted areas (one absolute path per line)',
       advanced: 'Advanced: pattern tables and other',
       harmless: 'Harmless command patterns (one regex per line, case-insensitive)',
@@ -67,12 +70,15 @@ window.__ModuleLoader__.load({
     const zh = {
       nav: '自动审批',
       title: '自动审批',
-      desc: '介于 Workspace Write 与 Full access 之间：无害命令与目标位于信任区域内的操作自动放行，其余照常询问。关闭档位门控后可与任意权限模式叠加生效。',
+      desc: '介于 Workspace Write 与 Full access 之间：无害命令与目标位于信任区域内的操作自动放行，其余照常询问。可选择全局生效，或仅当会话档位为自动审批时生效。',
       badgeActive: '配置生效',
       badgeInactive: '未启用',
       badgeCustom: '已自定义',
-      enabled: '启用自动审批',
-      gate: '仅当会话档位为自动审批时生效',
+      enable: '启用自动审批',
+      modeLabel: '生效范围',
+      modeGlobal: '全局生效（不依赖会话档位）',
+      modeGated: '仅当会话档位为自动审批时生效',
+      offHint: '未启用时，选择 Auto Approval 档位与 Workspace Write 完全相同（不会自动放行任何操作）。',
       trustedAreas: '信任区域（每行一个绝对路径）',
       advanced: '高级：命令模式表与其他',
       harmless: '无害命令模式（每行一条正则，大小写不敏感）',
@@ -129,7 +135,10 @@ window.__ModuleLoader__.load({
     }
 
     function isAbsolutePath(value) {
-      return /^[A-Za-z]:[\\/]/.test(value) || value.startsWith('/')
+      // drive letters (C:\), POSIX roots (/srv), and UNC shares (\\server\share)
+      return /^[A-Za-z]:[\\/]/.test(value)
+        || /^\\\\[A-Za-z0-9_.-]+\\[A-Za-z0-9_.$-]+(?:[\\/]|$)/.test(value)
+        || value.startsWith('/')
     }
 
     function ShieldIcon() {
@@ -155,7 +164,8 @@ window.__ModuleLoader__.load({
 
     /**
      * The Auto Approval settings section body. Reads and writes the plugin's
-     * own settings namespace through the same-origin config API.
+     * own settings namespace through the same-origin config API. The `mode`
+     * field is the single master control: off | global | gated.
      */
     function AutoApprovalSection({ t }) {
       const [state, setState] = React.useState({ phase: 'loading' })
@@ -222,32 +232,46 @@ window.__ModuleLoader__.load({
           .catch((error) => setState((current) => ({ ...current, saving: false, error: t('resetError') + errorMessage(error) })))
       }
 
-      const active = value.enabled && value.requireTrustedPreset
+      const enabled = draft.mode !== 'off'
       const recent = (state.status?.recent || []).slice(-5).reverse()
+      const modeInputName = 'aa-mode'
 
       return React.createElement('div', { className: 'aa-card' },
         React.createElement('div', { className: 'aa-head' },
           ShieldIcon(),
           React.createElement('span', { className: 'aa-title' }, t('title')),
-          React.createElement('span', { className: 'aa-badge' }, active ? t('badgeActive') : t('badgeInactive')),
+          React.createElement('span', { className: 'aa-badge' }, enabled ? t('badgeActive') : t('badgeInactive')),
           overridden ? React.createElement('span', { className: 'aa-badge' }, t('badgeCustom')) : null),
         React.createElement('p', { className: 'aa-hint' }, t('desc')),
 
         React.createElement('label', { className: 'aa-check' },
           React.createElement('input', {
             type: 'checkbox',
-            checked: draft.enabled,
-            onChange: (event) => set('enabled', event.target.checked),
+            checked: enabled,
+            onChange: (event) => set('mode', event.target.checked ? 'gated' : 'off'),
           }),
-          t('enabled')),
+          t('enable')),
 
-        React.createElement('label', { className: 'aa-check' },
-          React.createElement('input', {
-            type: 'checkbox',
-            checked: draft.requireTrustedPreset,
-            onChange: (event) => set('requireTrustedPreset', event.target.checked),
-          }),
-          t('gate')),
+        enabled
+          ? React.createElement('div', { className: 'aa-field', role: 'radiogroup', 'aria-label': t('modeLabel') },
+              React.createElement('span', { className: 'aa-label' }, t('modeLabel')),
+              React.createElement('label', { className: 'aa-check' },
+                React.createElement('input', {
+                  type: 'radio',
+                  name: modeInputName,
+                  checked: draft.mode === 'global',
+                  onChange: () => set('mode', 'global'),
+                }),
+                t('modeGlobal')),
+              React.createElement('label', { className: 'aa-check' },
+                React.createElement('input', {
+                  type: 'radio',
+                  name: modeInputName,
+                  checked: draft.mode !== 'global',
+                  onChange: () => set('mode', 'gated'),
+                }),
+                t('modeGated')))
+          : React.createElement('p', { className: 'aa-hint' }, t('offHint')),
 
         React.createElement('div', { className: 'aa-field' },
           React.createElement('span', { className: 'aa-label' }, t('trustedAreas')),
@@ -284,7 +308,11 @@ window.__ModuleLoader__.load({
               type: 'number',
               min: 1,
               value: String(draft.maxCommandChars),
-              onChange: (event) => set('maxCommandChars', Number(event.target.value) || 0),
+              onChange: (event) => {
+                const next = event.target.valueAsNumber
+                if (!Number.isFinite(next) || next < 1) return
+                set('maxCommandChars', next)
+              },
             })),
           React.createElement('label', { className: 'aa-check' },
             React.createElement('input', {
@@ -335,13 +363,14 @@ window.__ModuleLoader__.load({
       ctx.effect(() => ctx.locale.register(NS, { en, zh }), 'dsh-auto-approval-plugin: locale')
       const t = ctx.locale.bind(NS)
 
+      // Official settings-page idiom: `locale: NS` provides the kit `t` seat.
       ctx.slots.inject('settings.section', () => ctx.slots.register({
         name: 'settings.section',
         id: 'auto-approval',
         order: 31,
         label: () => t('nav'),
-        inject: () => ({ t }),
-      }, (props) => React.createElement(AutoApprovalSection, { ...props, t })))
+        locale: NS,
+      }, AutoApprovalSection))
     }
 
     const inject = ['slots', 'locale']
